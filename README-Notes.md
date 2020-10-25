@@ -8,6 +8,7 @@ Requirements and dependencies choosen:
         postgresql
     *Ability to support multiple users/accounts
         spring-boot-starter-security
-    
+    *Document API
+|       springfox-boot-starter    
 
 
