@@ -11,4 +11,15 @@ Requirements and dependencies choosen:
     *Document API
 |       springfox-boot-starter    
 
+Modeling:
+    I will create a class that is the Cell for the grid that will contain several properties:
+        if it has a mine inside,
+        how many cells arround with mines,
+        if a red flag is up,
+        and a question mark.
+    
+    Also, a Grid with the following properties:
+        columns,
+        rows,
+        mines
 
