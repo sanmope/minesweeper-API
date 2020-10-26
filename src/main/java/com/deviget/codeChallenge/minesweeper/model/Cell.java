@@ -1,6 +1,10 @@
-import com.deviget.codeChallenge.minesweeper.model;
+package com.deviget.codeChallenge.minesweeper.model;
+
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cell {
 
     private boolean revealed;
