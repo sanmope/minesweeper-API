@@ -2,16 +2,12 @@ package com.deviget.codeChallenge.minesweeper.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-
-import org.hibernate.annotations.TypeDef;
 
 import lombok.Builder;
 import lombok.*;
 
 @Data
 @Entity
-//@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,10 +28,6 @@ public class Game {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private GameStates state;
-
-	//@Type(type = "jsonb")
-	//@Column(columnDefinition = "jsonb")
-	//private Cell[][] mines;
 
 	@Column
 	private Boolean redFlag;

@@ -32,3 +32,10 @@ lombok anotations:
         Person.builder().name("Adam Savage").city("San Francisco").job("Mythbusters").job("Unchained Reaction").build();
     Documentation:https://projectlombok.org/features/constructor
 
+
+
+Adding ModelMapper:When the map method is called, the source and destination types are analyzed to determine which properties implicitly match according to a matching strategy and other configuration. Data is then mapped according to these matches.
+
+
+Adding Optional: Optional is intended to provide a limited mechanism for library method return types where there needed to be a clear way to represent “no result," and using null for such was overwhelmingly likely to cause errors.
+
