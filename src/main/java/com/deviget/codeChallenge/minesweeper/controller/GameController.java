@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.message.callback.PrivateKeyCallback.Request;
+import javax.validation.Valid;
+
+import com.deviget.codeChallenge.minesweeper.GameException;
+import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.service.GameService;
 
 
@@ -15,15 +20,20 @@ public class GameController{
     @Autowired
     private GameService gameService;
 
-    @GetMapping(value="/game/hello")
-	public ResponseEntity hello() {
-        try{ 
-            return ResponseEntity.status(HttpStatus.OK).body("hello buddy");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no hello");
+    @PostMapping(value = "/game/create", consumes="application/json")
+    public ResponseEntity createGame(@Valid @RequestBody GridRequest request){ 
+
+        try{
+            if(request.getMines() <request.getColumns()*request.getRows()){
+                ResponseEntity.status(HttpStatus.CONFLICT).body("the number of mines is greater than the number of cells. Please reduce the ammount.");
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(gameService.createGame(request));
+        }catch(GameException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getLocalizedMessage());
+
         }
-        
     }
+
     @GetMapping(value="/game/{userName}")
 	public ResponseEntity getGame(@PathVariable String userName) {
         try{ 

@@ -27,7 +27,7 @@ public class Game {
 
 	@Column
 	@Enumerated(EnumType.STRING)
-	private GameStates state;
+	private State state;
 
 	@Column
 	private Boolean redFlag;
@@ -40,7 +40,7 @@ public class Game {
 	public Game(Cell[][] mines, String userName) {
 		this.mines = mines;
 		this.userName = userName;
-		this.state = GameStates.ACTIVE;
+		this.state = state.ACTIVE;
 		this.redFlag = false;
 		this.questionMark = false;
 	}

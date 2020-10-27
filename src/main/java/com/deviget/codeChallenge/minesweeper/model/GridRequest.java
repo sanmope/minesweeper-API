@@ -5,10 +5,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class Grid {
+@Builder
+public class GridRequest {
     
     @NotEmpty
 	private String name;

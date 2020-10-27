@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameBean {
-	private String name;
+	private String userName;
 	private boolean redFlag;
     private boolean questionMark;
-    private GameStates state;
+    private State state;
 	private Cell[][] mines;
 }
