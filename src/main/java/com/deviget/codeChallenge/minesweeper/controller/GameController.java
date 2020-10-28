@@ -20,7 +20,7 @@ public class GameController{
     @Autowired
     private GameService gameService;
 
-    @PostMapping(value = "/game/create", consumes="application/json")
+    @PostMapping(value = "/game", consumes="application/json")
     public ResponseEntity createGame(@Valid @RequestBody GridRequest request){ 
 
         try{

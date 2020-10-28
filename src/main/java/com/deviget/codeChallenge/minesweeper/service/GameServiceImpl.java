@@ -44,15 +44,17 @@ public class GameServiceImpl implements GameService {
 
         matrixGrid = initializeGrid(request);
 
-        return null;
+        return matrixGrid;
     }
 
     private Cell[][] initializeGrid(GridRequest request) {
-        Cell[][] matrixGridCells = new Cell[request.getRows()][request.getColumns()];
+        int height = request.getRows()-1;
+        int width  = request.getColumns()-1;  
+        Cell[][] matrixGridCells = new Cell[height][width];
 
         //Creating the Grid with it corresponding Cells.
-        for(int row=0; row < request.getRows()-1; row++){
-            for (int col=0; col <request.getColumns()-1; col++){
+        for(int row=0; row < height; row++){
+            for (int col=0; col < width; col++){
                 matrixGridCells[row][col] = new Cell();
             }
         }
@@ -63,15 +65,15 @@ public class GameServiceImpl implements GameService {
         
         int minesAdded = 0;
         while (minesAdded <= minesLeft - 1){
-            int x = r.nextInt(request.getRows());
-            int y = r.nextInt(request.getColumns());
-            if (matrixGridCells[x][y].isMine()){
+            int x = r.nextInt(height);
+            int y = r.nextInt(width);
+            if (!matrixGridCells[x][y].isMine()){
                 matrixGridCells[x][y].setMine(true);
                 minesLeft --;
             }
         }
 
-        
+        //TODO:assign mines arround
 
         return matrixGridCells;
     }
