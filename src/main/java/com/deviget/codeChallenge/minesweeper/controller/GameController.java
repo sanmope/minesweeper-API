@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.auth.message.callback.PrivateKeyCallback.Request;
 import javax.validation.Valid;
 
 import com.deviget.codeChallenge.minesweeper.GameException;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
+import com.deviget.codeChallenge.minesweeper.model.MarkRequest;
 import com.deviget.codeChallenge.minesweeper.service.GameService;
 
 
@@ -25,12 +25,12 @@ public class GameController{
     public ResponseEntity createGame(@Valid @RequestBody GridRequest request) { 
 
         try {
-            if(request.getMines() <request.getColumns()*request.getRows()){
+            if(request.getMines() < request.getColumns()*request.getRows()){
                 ResponseEntity.status(HttpStatus.CONFLICT).body("the number of mines is greater than the number of cells. Please reduce the ammount.");
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(gameService.createGame(request));
         } catch(GameException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
         }
     }
@@ -40,9 +40,19 @@ public class GameController{
         try{ 
             return ResponseEntity.ok(gameService.getGame(userName));
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("no username");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no username");
         }
         
+    }
+
+    @PutMapping(value = "/game/{userName}/mark/{markType}", consumes="application/json")
+    public ResponseEntity setMark(@PathVariable String userName, @PathVariable String markType, @Valid @RequestBody MarkRequest request) {
+        try {     
+            return ResponseEntity.ok(gameService.setMark(userName,markType,request));
+        } catch(GameException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());   
+        }
+
     }
 
 }

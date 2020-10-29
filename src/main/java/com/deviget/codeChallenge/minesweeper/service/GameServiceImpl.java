@@ -9,6 +9,8 @@ import com.deviget.codeChallenge.minesweeper.model.Game;
 import com.deviget.codeChallenge.minesweeper.model.GameResponse;
 import com.deviget.codeChallenge.minesweeper.model.State;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
+import com.deviget.codeChallenge.minesweeper.model.MarkRequest;
+import com.deviget.codeChallenge.minesweeper.model.MarkType;
 import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,34 @@ public class GameServiceImpl implements GameService {
                 .state(newGame.getState())
                 .build();
     }
+
+
+    @Override
+    public GameResponse setMark(String userName, String markType,MarkRequest request){
+        
+        Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
+        
+        if (!game.isPresent()){
+            throw new GameException(String.format("The user [%] has no active game to play with",userName));
+        }
+        if (game.get().getMines()[request.getRow()][request.getCollumn()].isRevealed()){
+            throw new GameException(String.format("This Possition is already revealed [%][%] ",request.getRow(),request.getCollumn()));
+        }
+
+        if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0){
+            game.get().setMarkType(MarkType.QUESTION);
+        }else{
+            game.get().setMarkType(MarkType.RED_FLAG);
+        }
+        
+
+        gameRepository.save(game.get());
+
+        return modelMapper.map(game.get(), GameResponse.class);
+
+    }
+
+
 
     private Cell[][] initializeGrid(GridRequest request) {
         int height = request.getRows();

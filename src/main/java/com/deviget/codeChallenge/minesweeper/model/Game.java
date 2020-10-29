@@ -29,6 +29,10 @@ public class Game {
 	@Enumerated(EnumType.STRING)
 	private State state;
 
+	@Column
+	@Enumerated(EnumType.STRING)
+	private MarkType markType;
+
 	@Type(type = "jsonb")
 	@Column(columnDefinition = "jsonb")
     private Cell[][] mines;
