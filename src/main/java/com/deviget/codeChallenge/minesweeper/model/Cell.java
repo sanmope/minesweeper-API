@@ -1,11 +1,13 @@
 package com.deviget.codeChallenge.minesweeper.model;
 
+import java.io.Serializable;
+
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cell {
+public class Cell implements Serializable {
 
     private boolean revealed;
 	private int minesAround;

@@ -2,6 +2,10 @@ package com.deviget.codeChallenge.minesweeper.model;
 
 import javax.persistence.*;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import lombok.Builder;
 import lombok.*;
@@ -11,15 +15,11 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Game {
     
 	@Id
-	@GeneratedValue(generator = "id_generator")
-	@SequenceGenerator(
-			name = "id_generator",
-			sequenceName = "id_generator",
-			initialValue = 1000
-	)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
 	@Column
@@ -34,18 +34,9 @@ public class Game {
 
 	@Column
 	private Boolean questionMark;
-
-	@Type(
-        type = "seat_status_array",
-        parameters = @org.hibernate.annotations.Parameter(
-            name = "sql_array_type",
-            value = "seat_status"
-        )
-    )
-    @Column(
-        name = "seat_grid",
-        columnDefinition = "seat_status[][]"
-    )
+	
+	@Type(type = "jsonb")
+	@Column(columnDefinition = "jsonb")
     private Cell[][] mines;
 
 	public Game(Cell[][] mines, String userName) {
