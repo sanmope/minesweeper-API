@@ -55,8 +55,8 @@ public class GameServiceImpl implements GameService {
     }
 
     private Cell[][] initializeGrid(GridRequest request) {
-        int height = request.getRows()-1;
-        int width  = request.getColumns()-1;  
+        int height = request.getRows();
+        int width  = request.getColumns();  
         Cell[][] matrixGridCells = new Cell[height][width];
 
         //Creating the Grid with it corresponding Cells.
@@ -85,9 +85,11 @@ public class GameServiceImpl implements GameService {
             for (int col=0; col < width; col++){ // loop through grid
                 for (int i=-1; i <= 1; i++){ //look in each cell arround it self to know if it has mines
                     for (int j=-1; j <= 1; j++){ //look in each cell arround it self to know if it has mines
-                        if (((row+i) <= height) & ((row+i) >=0) & ((col+j) <= width) & ((col+j) >=0) & (i != 0) & (j != 0) ){
-                            if (matrixGridCells[row+i][col+j].isMine()){
-                                matrixGridCells[row][col].setMinesAround(matrixGridCells[row][col].getMinesAround() + 1);
+                        if (((row+i) < height) & ((row+i) >=0) & ((col+j) < width) & ((col+j) >=0)){
+                            if (matrixGridCells[row+i][col+j] != matrixGridCells[row][col]){
+                                if (matrixGridCells[row+i][col+j].isMine()){
+                                    matrixGridCells[row][col].setMinesAround(matrixGridCells[row][col].getMinesAround() + 1);
+                                }
                             }
                         }
                     }   
