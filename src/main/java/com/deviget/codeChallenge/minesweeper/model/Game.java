@@ -29,12 +29,6 @@ public class Game {
 	@Enumerated(EnumType.STRING)
 	private State state;
 
-	@Column
-	private Boolean redFlag;
-
-	@Column
-	private Boolean questionMark;
-	
 	@Type(type = "jsonb")
 	@Column(columnDefinition = "jsonb")
     private Cell[][] mines;
@@ -43,7 +37,5 @@ public class Game {
 		this.mines = mines;
 		this.userName = userName;
 		this.state = State.ACTIVE;
-		this.redFlag = false;
-		this.questionMark = false;
 	}
 }

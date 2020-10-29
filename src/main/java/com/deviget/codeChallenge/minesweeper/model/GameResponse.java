@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameResponse {
 	private String userName;
-	private boolean redFlag;
-    private boolean questionMark;
     private State state;
 	private Cell[][] mines;
 }
