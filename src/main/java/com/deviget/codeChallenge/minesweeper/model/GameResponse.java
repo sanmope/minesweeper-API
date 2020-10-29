@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameBean {
+public class GameResponse {
 	private String userName;
 	private boolean redFlag;
     private boolean questionMark;

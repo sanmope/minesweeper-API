@@ -6,7 +6,7 @@ import java.util.Random;
 import com.deviget.codeChallenge.minesweeper.GameException;
 import com.deviget.codeChallenge.minesweeper.model.Cell;
 import com.deviget.codeChallenge.minesweeper.model.Game;
-import com.deviget.codeChallenge.minesweeper.model.GameBean;
+import com.deviget.codeChallenge.minesweeper.model.GameResponse;
 import com.deviget.codeChallenge.minesweeper.model.State;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
@@ -28,15 +28,15 @@ public class GameServiceImpl implements GameService {
 
 
     @Override
-    public GameBean getGame(String userName) {
+    public GameResponse getGame(String userName) {
 
         Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
-        return game.map(gameMap -> modelMapper.map(gameMap, GameBean.class)).get();
+        return game.map(gameMap -> modelMapper.map(gameMap, GameResponse.class)).get();
 
     }
 
     @Override
-    public GameBean createGame(GridRequest request) {
+    public GameResponse createGame(GridRequest request) {
         
         if(gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE).isPresent()){
             throw new GameException(String.format("The user [%s] has already created a game and is cative  ",request.getName()));
@@ -44,7 +44,14 @@ public class GameServiceImpl implements GameService {
 
         matrixGrid = initializeGrid(request);
 
-        return matrixGrid;
+        Game newGame = new Game(matrixGrid,request.getName());
+        gameRepository.save(newGame);
+
+        return GameResponse.builder()
+                .userName(newGame.getUserName())
+                .mines(newGame.getMines())
+                .state(newGame.getState())
+                .build();
     }
 
     private Cell[][] initializeGrid(GridRequest request) {

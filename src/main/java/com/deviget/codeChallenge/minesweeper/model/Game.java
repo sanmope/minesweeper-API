@@ -35,12 +35,23 @@ public class Game {
 	@Column
 	private Boolean questionMark;
 
+	@Type(
+        type = "seat_status_array",
+        parameters = @org.hibernate.annotations.Parameter(
+            name = "sql_array_type",
+            value = "seat_status"
+        )
+    )
+    @Column(
+        name = "seat_grid",
+        columnDefinition = "seat_status[][]"
+    )
     private Cell[][] mines;
 
 	public Game(Cell[][] mines, String userName) {
 		this.mines = mines;
 		this.userName = userName;
-		this.state = state.ACTIVE;
+		this.state = State.ACTIVE;
 		this.redFlag = false;
 		this.questionMark = false;
 	}

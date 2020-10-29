@@ -20,15 +20,16 @@ public class GameController{
     @Autowired
     private GameService gameService;
 
-    @PostMapping(value = "/game", consumes="application/json")
-    public ResponseEntity createGame(@Valid @RequestBody GridRequest request){ 
 
-        try{
+    @PostMapping(value = "/game", consumes="application/json") 
+    public ResponseEntity createGame(@Valid @RequestBody GridRequest request) { 
+
+        try {
             if(request.getMines() <request.getColumns()*request.getRows()){
                 ResponseEntity.status(HttpStatus.CONFLICT).body("the number of mines is greater than the number of cells. Please reduce the ammount.");
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(gameService.createGame(request));
-        }catch(GameException e){
+        } catch(GameException e){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getLocalizedMessage());
 
         }
