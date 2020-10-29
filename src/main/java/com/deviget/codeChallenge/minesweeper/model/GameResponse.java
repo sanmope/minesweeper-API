@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class GameResponse {
 	private String userName;
 	private State state;
-	private MarkType mark;
 	private Cell[][] mines;
 }

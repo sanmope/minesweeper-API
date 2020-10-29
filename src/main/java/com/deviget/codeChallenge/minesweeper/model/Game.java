@@ -28,10 +28,7 @@ public class Game {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private State state;
-
-	@Column
-	@Enumerated(EnumType.STRING)
-	private MarkType markType;
+	
 
 	@Type(type = "jsonb")
 	@Column(columnDefinition = "jsonb")

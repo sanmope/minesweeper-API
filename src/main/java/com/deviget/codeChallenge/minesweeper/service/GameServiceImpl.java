@@ -70,9 +70,9 @@ public class GameServiceImpl implements GameService {
         }
 
         if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0){
-            game.get().setMarkType(MarkType.QUESTION);
+            game.get().getMines()[request.getRow()][request.getCollumn()].setQuestionMark(true);
         }else{
-            game.get().setMarkType(MarkType.RED_FLAG);
+            game.get().getMines()[request.getRow()][request.getCollumn()].setRedFlag(true);
         }
         
 
