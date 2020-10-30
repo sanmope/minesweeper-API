@@ -16,6 +16,7 @@ import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -23,11 +24,11 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private GameRepository gameRepository;
+
     @Autowired
     private ModelMapper modelMapper;
 
     private Cell[][] matrixGrid;
-
 
     @Override
     public GameResponse getGame(String userName) {
@@ -39,42 +40,39 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameResponse createGame(GridRequest request) {
-        
-        if(gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE).isPresent()){
-            throw new GameException(String.format("The user [%s] has already created a game and is cative  ",request.getName()));
+
+        if (gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE).isPresent()) {
+            throw new GameException(
+                    String.format("The user [%s] has already created a game and is cative  ", request.getName()));
         }
 
         matrixGrid = initializeGrid(request);
 
-        Game newGame = new Game(matrixGrid,request.getName());
+        Game newGame = new Game(matrixGrid, request.getName());
         gameRepository.save(newGame);
 
-        return GameResponse.builder()
-                .userName(newGame.getUserName())
-                .mines(newGame.getMines())
-                .state(newGame.getState())
-                .build();
+        return GameResponse.builder().userName(newGame.getUserName()).mines(newGame.getMines())
+                .state(newGame.getState()).build();
     }
 
-
     @Override
-    public GameResponse setMark(String userName, String markType,MarkRequest request){
-        
+    public GameResponse setMark(String userName, String markType, MarkRequest request) {
+
         Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
-        
-        if (!game.isPresent()){
-            throw new GameException(String.format("The user [%] has no active game to play with",userName));
+
+        if (!game.isPresent()) {
+            throw new GameException(String.format("The user [%] has no active game to play with", userName));
         }
-        if (game.get().getMines()[request.getRow()][request.getCollumn()].isRevealed()){
-            throw new GameException(String.format("This Possition is already revealed [%][%] ",request.getRow(),request.getCollumn()));
+        if (game.get().getMines()[request.getRow()][request.getCollumn()].isRevealed()) {
+            throw new GameException(String.format("This Possition is already revealed [%][%] ", request.getRow(),
+                    request.getCollumn()));
         }
 
-        if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0){
+        if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0) {
             game.get().getMines()[request.getRow()][request.getCollumn()].setQuestionMark(true);
-        }else{
+        } else {
             game.get().getMines()[request.getRow()][request.getCollumn()].setRedFlag(true);
         }
-        
 
         gameRepository.save(game.get());
 
@@ -82,52 +80,59 @@ public class GameServiceImpl implements GameService {
 
     }
 
-
-
     private Cell[][] initializeGrid(GridRequest request) {
         int height = request.getRows();
-        int width  = request.getColumns();  
+        int width = request.getColumns();
         Cell[][] matrixGridCells = new Cell[height][width];
 
-        //Creating the Grid with it corresponding Cells.
-        for(int row=0; row < height; row++){
-            for (int col=0; col < width; col++){
+        // Creating the Grid with it corresponding Cells.
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
                 matrixGridCells[row][col] = new Cell();
             }
         }
 
-        //Assigning the mines randomly
+        // Assigning the mines randomly
         int minesLeft = request.getMines();
         Random r = new Random();
-        
+
         int minesAdded = 0;
-        while (minesAdded <= minesLeft - 1){
+        while (minesAdded <= minesLeft - 1) {
             int x = r.nextInt(height);
             int y = r.nextInt(width);
-            if (!matrixGridCells[x][y].isMine()){
+            if (!matrixGridCells[x][y].isMine()) {
                 matrixGridCells[x][y].setMine(true);
-                minesLeft --;
-            }
-        }
-
-        //Count how many mines it has arround 
-        for(int row=0; row < height; row++){ // loop through grid
-            for (int col=0; col < width; col++){ // loop through grid
-                for (int i=-1; i <= 1; i++){ //look in each cell arround it self to know if it has mines
-                    for (int j=-1; j <= 1; j++){ //look in each cell arround it self to know if it has mines
-                        if (((row+i) < height) & ((row+i) >=0) & ((col+j) < width) & ((col+j) >=0)){
-                            if (matrixGridCells[row+i][col+j] != matrixGridCells[row][col]){
-                                if (matrixGridCells[row+i][col+j].isMine()){
-                                    matrixGridCells[row][col].setMinesAround(matrixGridCells[row][col].getMinesAround() + 1);
-                                }
-                            }
-                        }
-                    }   
-                }
+                minesLeft--;
+                incrementMinesArroundForNeighborCells(matrixGridCells, x, y, height, width);
             }
         }
 
         return matrixGridCells;
     }
+
+    private void incrementMinesArroundForNeighborCells(Cell[][] matrixGridCells, int x, int y, int height, int width) {
+        for (int i = -1; i <= 1; i++) { // look in each cell arround it self to know if it has mines
+            for (int j = -1; j <= 1; j++) { // look in each cell arround it self to know if it has mines
+                if (((x + i) < height) & ((x + i) >= 0) & ((y + j) < width) & ((y + j) >= 0)) {
+                    if (!matrixGridCells[x + i][y + j].equals(matrixGridCells[x][y])) { 
+                        if (matrixGridCells[x + i][y + j].isMine()) {
+                            matrixGridCells[x][y].setMinesAround(matrixGridCells[x][y].getMinesAround() + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    //Methods used for Testing purposes.
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+    
+    public void setGameRepository(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
+    }
+
 
 }
