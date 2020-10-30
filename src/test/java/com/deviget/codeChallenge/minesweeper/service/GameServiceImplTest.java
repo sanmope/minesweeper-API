@@ -43,8 +43,7 @@ public class GameServiceImplTest {
         request.setRows(4);
         request.setName("testName");
 
-        Optional<Game> optionalReturn = Optional.empty();
-        when(gameRepository.findGameByUserNameAndState("userName", State.ACTIVE)).thenReturn(optionalReturn);
+        when(gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE)).thenReturn(Optional.of(new Game()));
         assertThrows(GameException.class,()-> gameService.createGame(request));
 
     }
@@ -79,5 +78,18 @@ public class GameServiceImplTest {
 
     }
 
+    @Test
+    public void testCreateGameOversizedNotAllowed(){
+
+        GridRequest request = new GridRequest();
+        request.setColumns(90);      
+        request.setRows(90);
+        request.setName("testName");
+
+        when(gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE)).thenReturn(Optional.of(new Game()));
+        assertThrows(GameException.class,()-> gameService.createGame(request));
+
+
+    }
     
 }

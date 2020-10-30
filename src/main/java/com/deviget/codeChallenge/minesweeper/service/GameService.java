@@ -1,10 +1,9 @@
 package com.deviget.codeChallenge.minesweeper.service;
 
-import javax.validation.Valid;
-
 import com.deviget.codeChallenge.minesweeper.model.GameResponse;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.model.MarkRequest;
+import com.deviget.codeChallenge.minesweeper.model.StepRequest;
 
 public interface GameService {
 
@@ -13,5 +12,7 @@ public interface GameService {
 	GameResponse createGame( GridRequest request);
 
 	GameResponse setMark(String userName, String markType,MarkRequest request);
+
+	GameResponse stepOn(String userName, StepRequest request);
 
 }

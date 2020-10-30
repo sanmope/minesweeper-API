@@ -40,3 +40,15 @@ Adding ModelMapper:When the map method is called, the source and destination typ
 Adding Optional: Optional is intended to provide a limited mechanism for library method return types where there needed to be a clear way to represent “no result," and using null for such was overwhelmingly likely to cause errors.
 
 Annotation  indicating a method parameter should be bound to the body of the web request. The body of the request is passed through an HttpMessageConverter to resolve the method argument depending on the content type of the request. Optionally, automatic validation can be applied by annotating the argument with @Valid.
+
+
+Game Design:
+    create Grid
+        receives max rows, max cols, and number of mines
+    
+    insert mines randomly
+        receives gridMatrix and number of mines
+    
+    uncover Cells
+        receives gridMatrix, Cell
+    

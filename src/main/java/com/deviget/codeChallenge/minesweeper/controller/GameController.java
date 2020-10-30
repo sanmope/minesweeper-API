@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import com.deviget.codeChallenge.minesweeper.GameException;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.model.MarkRequest;
+import com.deviget.codeChallenge.minesweeper.model.StepRequest;
 import com.deviget.codeChallenge.minesweeper.service.GameService;
 
 
@@ -55,4 +56,12 @@ public class GameController{
 
     }
 
+    @PutMapping(value = "/game/{userName}/step")
+    public ResponseEntity stepOn(@PathVariable String userName, @Valid @RequestBody StepRequest request) {
+        try {
+            return ResponseEntity.ok(gameService.stepOn(userName,request));
+        } catch (GameException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());  
+        }
+    }
 }
