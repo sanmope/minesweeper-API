@@ -52,7 +52,7 @@ public class GameServiceImpl implements GameService {
         Game newGame = new Game(matrixGrid, request.getName());
         gameRepository.save(newGame);
 
-        return GameResponse.builder().userName(newGame.getUserName()).mines(newGame.getMines())
+        return GameResponse.builder().userName(newGame.getUserName()).grid(newGame.getGrid())
                 .state(newGame.getState()).build();
     }
 
@@ -65,15 +65,15 @@ public class GameServiceImpl implements GameService {
             throw new GameException(String.format("The user [%s] has no active game to play with", userName));
         }
 
-        if (game.get().getMines()[request.getRow()][request.getColumn()].isRevealed()) {
+        if (game.get().getGrid()[request.getRow()][request.getColumn()].isRevealed()) {
             throw new GameException(String.format("This Possition is already revealed [%][%] ", request.getRow(),
                     request.getColumn()));
         }
 
         if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0) {
-            game.get().getMines()[request.getRow()][request.getColumn()].setQuestionMark(true);
+            game.get().getGrid()[request.getRow()][request.getColumn()].setQuestionMark(true);
         } else {
-            game.get().getMines()[request.getRow()][request.getColumn()].setRedFlag(true);
+            game.get().getGrid()[request.getRow()][request.getColumn()].setRedFlag(true);
         }
 
         gameRepository.save(game.get());
@@ -88,7 +88,7 @@ public class GameServiceImpl implements GameService {
             throw new GameException(String.format("The user [%s] has no active game to play with", userName));
         }
 
-        Cell[][] grid = game.get().getMines();
+        Cell[][] grid = game.get().getGrid();
 
         if (revealCell(grid,request.getRow(),request.getColumn()) == -1) {
             game.get().setState(State.EXPLODED);

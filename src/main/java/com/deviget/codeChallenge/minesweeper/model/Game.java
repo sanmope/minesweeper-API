@@ -31,10 +31,10 @@ public class Game {
 
 	@Type(type = "jsonb")
 	@Column(columnDefinition = "jsonb")
-    private Cell[][] mines;
+    private Cell[][] grid;
 
-	public Game(Cell[][] mines, String userName) {
-		this.mines = mines;
+	public Game(Cell[][] grid, String userName) {
+		this.grid = grid;
 		this.userName = userName;
 		this.state = State.ACTIVE;
 	}

@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class GameResponse {
 	private String userName;
 	private State state;
-	private Cell[][] mines;
+	private Cell[][] grid;
 }
