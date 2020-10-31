@@ -1,9 +1,11 @@
 package com.deviget.codeChallenge.minesweeper.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Random;
 
-import com.deviget.codeChallenge.minesweeper.GameException;
+import com.deviget.codeChallenge.minesweeper.exception.GameException;
 import com.deviget.codeChallenge.minesweeper.model.Cell;
 import com.deviget.codeChallenge.minesweeper.model.Game;
 import com.deviget.codeChallenge.minesweeper.model.GameResponse;
@@ -17,9 +19,10 @@ import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.log4j.Log4j2;
 
 import org.modelmapper.ModelMapper;
-
+@Log4j2
 @Service
 public class GameServiceImpl implements GameService {
 
@@ -34,6 +37,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameResponse getGame(String userName) {
 
+        log.info("[GameService: getGame] Searching for active game for user {}",userName);
         Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
         return game.map(gameMap -> modelMapper.map(gameMap, GameResponse.class)).get();
 
@@ -42,7 +46,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public GameResponse createGame(GridRequest request) {
 
+        log.info("[GameService: createGame] Searching for active game for user {} before creation",request.getName());
         if (gameRepository.findGameByUserNameAndState(request.getName(), State.ACTIVE).isPresent()) {
+            log.error("[GameService: createGame] The user {} has already created a game and is cative", request.getName());
             throw new GameException(
                     String.format("The user [%s] has already created a game and is cative", request.getName()));
         }
@@ -50,8 +56,11 @@ public class GameServiceImpl implements GameService {
         matrixGrid = initializeGrid(request);
 
         Game newGame = new Game(matrixGrid, request.getName());
+        newGame.setMines(request.getMines());
+        newGame.setTimeTracker(LocalDateTime.now());
         gameRepository.save(newGame);
 
+        log.info("[GameService: createGame] Game in Active State for user {} found",request.getName());
         return GameResponse.builder().userName(newGame.getUserName()).grid(newGame.getGrid())
                 .state(newGame.getState()).build();
     }
@@ -60,12 +69,15 @@ public class GameServiceImpl implements GameService {
     public GameResponse setMark(String userName, String markType, MarkRequest request) {
 
         Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
-
+        log.info("[GameService: setMark] Seting mark {} for user {} in his active game",markType,game.get().getUserName());
         if (!game.isPresent()) {
-            throw new GameException(String.format("The user [%s] has no active game to play with", userName));
+            log.error("[GameService: setMark] Seting mark {} failed for user {}. No Active Game",markType,game.get().getUserName());
+            throw new GameException(String.format("The user {} has no active game to play with", userName));
         }
 
         if (game.get().getGrid()[request.getRow()][request.getColumn()].isRevealed()) {
+            log.error("[GameService: setMark] Seting mark {} for user {}: This Possition is already revealed [%][%] ",markType,game.get().getUserName(), request.getRow(),
+            request.getColumn());
             throw new GameException(String.format("This Possition is already revealed [%][%] ", request.getRow(),
                     request.getColumn()));
         }
@@ -83,16 +95,21 @@ public class GameServiceImpl implements GameService {
     }
 
     public GameResponse stepOn(String userName, StepRequest request){
+        
+        log.info("[GameService: stepOn] stepOn {}{}. Looking for active Game",request.getRow(),request.getColumn());
         Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
         if (!game.isPresent()) {
+            log.error("[GameService: stepOn] stepOn {}{} failed for user {}. No Active Game",request.getRow(),request.getColumn(),game.get().getUserName());
             throw new GameException(String.format("The user [%s] has no active game to play with", userName));
         }
 
         Cell[][] grid = game.get().getGrid();
 
         if (revealCell(grid,request.getRow(),request.getColumn()) == -1) {
+            log.info("[GameService: stepOn] stepOn {}{} for user {}. Mine Explded",request.getRow(),request.getColumn(),game.get().getUserName());
             game.get().setState(State.EXPLODED);
-        }else if (hasWon(grid)){
+        }else if (hasWon(grid,game.get().getMines())){
+            log.info("[GameService: stepOn] stepOn {}{} for user {}. User Won the Game!!",request.getRow(),request.getColumn(),game.get().getUserName());
             game.get().setState(State.WON);
         }
 
@@ -100,12 +117,25 @@ public class GameServiceImpl implements GameService {
     }
 
 
+    
+    public Long getTimeTracker(String userName) {
+        
+        log.info("[GameService: getTimeTracker] Looking for active Game");
+        Optional<Game> game = gameRepository.findGameByUserNameAndState(userName, State.ACTIVE);
+        if (!game.isPresent()) {
+            log.error("[GameService: getTimeTracker] failed for user {}. No Active Game",userName);
+            throw new GameException(String.format("The user [%s] has no active game to play with", userName));
+        }else{
+            return ( ChronoUnit.SECONDS.between(game.get().getTimeTracker(),LocalDateTime.now()));
+        }
+    }
 
     private Cell[][] initializeGrid(GridRequest request) {
+        log.info("[GameService: initializeGrid]: creating Grid for the game");
         int height = request.getRows();
         int width = request.getColumns(); 
         Cell[][] matrixGridCells = new Cell[height][width];
-
+        
         // Creating the Grid with it corresponding Cells.
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
@@ -116,13 +146,14 @@ public class GameServiceImpl implements GameService {
         }
 
         // Assigning the mines randomly
+        log.info("[GameService: initializeGrid]: Assigning mines Ramdomly");
         int minesLeft = request.getMines();
         Random r = new Random();
 
         int minesAdded = 0;
         while (minesAdded <= minesLeft - 1) {
-            int x = r.nextInt(width);
-            int y = r.nextInt(height);
+            int x = r.nextInt(width-1);
+            int y = r.nextInt(height-1);
             if (!matrixGridCells[x][y].isMine()) {
                 matrixGridCells[x][y].setMine(true);
                 minesLeft--;
@@ -134,6 +165,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void incrementMinesArroundForNeighborCells(Cell[][] matrixGridCells, int x, int y) {
+        log.info("[GameService: incrementMinesArroundForNeighborCells]: incrementing mines arround for neighbor cells.");
         int height = matrixGridCells.length;
         int width = matrixGridCells[0].length;
         for (int i = -1; i <= 1; i++) { // look in each cell arround it self to know if it has mines
@@ -151,6 +183,7 @@ public class GameServiceImpl implements GameService {
         int height = matrixGridCells.length;
         int width = matrixGridCells[0].length;
 
+        log.info("[GameService: uncoverEmptyCells]: Uncovering empty cells.");
         if (row < 0 || row > width || col < 0 || col > height){
             return;
         }
@@ -176,6 +209,8 @@ public class GameServiceImpl implements GameService {
         int height = matrixGridCells.length;
         int width = matrixGridCells[0].length;
         int cellRevealed = 0;
+        
+        log.info("[GameService: countCellRevealed]: Returning amount of mines already revealed.");
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 if (matrixGridCells[row][col].isRevealed()){
@@ -186,8 +221,9 @@ public class GameServiceImpl implements GameService {
         return cellRevealed;
     }
 
-    private boolean hasWon (Cell[][] matrixGridCells){
-        if (countCellRevealed(matrixGridCells) == (matrixGridCells.length*matrixGridCells[0].length)){
+    private boolean hasWon (Cell[][] matrixGridCells, int mines){
+        log.info("[GameService: hasWon]: Validating if user already won the game.");
+        if (countCellRevealed(matrixGridCells) == (matrixGridCells.length*matrixGridCells[0].length - mines)){
             return true;
         }else{
             return false;
@@ -197,6 +233,8 @@ public class GameServiceImpl implements GameService {
 
 
     private int revealCell (Cell[][] matrixGridCells,int x, int y){
+        
+        log.info("[GameService: revealCell]: Setpping into the cell.");
         if (matrixGridCells[x][y].isMine()){
             return -1;
         }else{
@@ -204,7 +242,6 @@ public class GameServiceImpl implements GameService {
             return countCellRevealed(matrixGridCells);
         }
     }
-
 
 
     //Methods used for Testing purposes.

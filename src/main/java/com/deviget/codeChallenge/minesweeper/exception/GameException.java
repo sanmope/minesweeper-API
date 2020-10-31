@@ -1,4 +1,4 @@
-package com.deviget.codeChallenge.minesweeper;
+package com.deviget.codeChallenge.minesweeper.exception;
 
 public class GameException extends RuntimeException{
     

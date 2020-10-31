@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import com.deviget.codeChallenge.minesweeper.GameException;
+import com.deviget.codeChallenge.minesweeper.exception.GameException;
 import com.deviget.codeChallenge.minesweeper.model.Cell;
 import com.deviget.codeChallenge.minesweeper.model.Game;
 import com.deviget.codeChallenge.minesweeper.model.GameResponse;
@@ -61,14 +61,14 @@ public class GameServiceImplTest {
         GameResponse response = gameService.createGame(request);
         assertEquals(State.ACTIVE, response.getState());
         assertEquals("testName", response.getUserName());
-        assertEquals(request.getRows(), response.getMines().length); 
-        assertEquals(request.getColumns(), response.getMines()[0].length);
+        assertEquals(request.getRows(), response.getGrid().length); 
+        assertEquals(request.getColumns(), response.getGrid()[0].length);
 
-        Cell[][] gridMatrix = response.getMines();
+        Cell[][] gridMatrix = response.getGrid();
         
         int minesCounter = 0;
-        for (int i=0; i<response.getMines().length;i++){
-            for (int j=0; j<response.getMines()[0].length; j++){
+        for (int i=0; i<response.getGrid().length;i++){
+            for (int j=0; j<response.getGrid()[0].length; j++){
                 if(gridMatrix[i][j].isMine()){
                     minesCounter++;
                 }
