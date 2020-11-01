@@ -76,10 +76,15 @@ public class GameServiceImpl implements GameService {
         }
 
         if (game.get().getGrid()[request.getRow()][request.getColumn()].isRevealed()) {
-            log.error("[GameService: setMark] Seting mark {} for user {}: This Possition is already revealed [%][%] ",markType,game.get().getUserName(), request.getRow(),
-            request.getColumn());
-            throw new GameException(String.format("This Possition is already revealed [%][%] ", request.getRow(),
-                    request.getColumn()));
+            log.error("[GameService: setMark] Seting mark {} for user {}: This Possition is already revealed {}{} "
+            ,markType
+            ,game.get().getUserName()
+            ,request.getRow()
+            ,request.getColumn());
+
+            throw new GameException(String.format("This Possition is already revealed [%s][%s]"
+            ,request.getRow()
+            ,request.getColumn()));
         }
 
         if (MarkType.QUESTION.name().compareToIgnoreCase(markType) == 0) {
