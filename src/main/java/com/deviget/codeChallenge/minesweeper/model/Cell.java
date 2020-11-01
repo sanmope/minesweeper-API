@@ -6,6 +6,7 @@ import java.util.Objects;
 import lombok.*;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cell implements Serializable {

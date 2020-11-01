@@ -1,7 +1,5 @@
 package com.deviget.codeChallenge.minesweeper.service;
 
-import java.time.LocalDateTime;
-
 import com.deviget.codeChallenge.minesweeper.model.GameResponse;
 import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.model.MarkRequest;

@@ -36,7 +36,7 @@ public class GameController{
             log.info("[GameController: createGame] Game Created for user {}",request.getName());
             return ResponseEntity.status(HttpStatus.CREATED).body(gameService.createGame(request));
         } catch(com.deviget.codeChallenge.minesweeper.exception.GameException e) {
-            log.error("[GameController: createGame]: Error: %s", e.getMessage());
+            log.error("[GameController: createGame]: Error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
         }

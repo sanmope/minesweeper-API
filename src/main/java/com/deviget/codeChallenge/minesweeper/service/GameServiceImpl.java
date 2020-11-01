@@ -62,7 +62,7 @@ public class GameServiceImpl implements GameService {
 
         log.info("[GameService: createGame] Game in Active State for user {} found",request.getName());
         return GameResponse.builder().userName(newGame.getUserName()).grid(newGame.getGrid())
-                .state(newGame.getState()).build();
+                .state(newGame.getState()).timeTracker(newGame.getTimeTracker()).build();
     }
 
     @Override
@@ -152,8 +152,8 @@ public class GameServiceImpl implements GameService {
 
         int minesAdded = 0;
         while (minesAdded <= minesLeft - 1) {
-            int x = r.nextInt(width-1);
-            int y = r.nextInt(height-1);
+            int y = r.nextInt(width);
+            int x = r.nextInt(height);
             if (!matrixGridCells[x][y].isMine()) {
                 matrixGridCells[x][y].setMine(true);
                 minesLeft--;
