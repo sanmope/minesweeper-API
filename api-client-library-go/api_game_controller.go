@@ -26,7 +26,7 @@ var (
 
 type GameControllerApiService service
 
-/* 
+/*
 GameControllerApiService createGame
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param request request
@@ -87,9 +87,7 @@ func (a *GameControllerApiService) CreateGameUsingPOST(ctx context.Context, requ
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		if err == nil { 
-			return localVarReturnValue, localVarHttpResponse, err
-		}
+		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
@@ -115,7 +113,7 @@ func (a *GameControllerApiService) CreateGameUsingPOST(ctx context.Context, requ
 	return localVarReturnValue, localVarHttpResponse, nil
 }
 
-/* 
+/*
 GameControllerApiService getGame
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param userName userName
@@ -175,9 +173,7 @@ func (a *GameControllerApiService) GetGameUsingGET(ctx context.Context, userName
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		if err == nil { 
-			return localVarReturnValue, localVarHttpResponse, err
-		}
+		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
@@ -203,7 +199,7 @@ func (a *GameControllerApiService) GetGameUsingGET(ctx context.Context, userName
 	return localVarReturnValue, localVarHttpResponse, nil
 }
 
-/* 
+/*
 GameControllerApiService getTimeTracker
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param userName userName
@@ -263,9 +259,7 @@ func (a *GameControllerApiService) GetTimeTrackerUsingGET(ctx context.Context, u
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		if err == nil { 
-			return localVarReturnValue, localVarHttpResponse, err
-		}
+		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
@@ -291,7 +285,7 @@ func (a *GameControllerApiService) GetTimeTrackerUsingGET(ctx context.Context, u
 	return localVarReturnValue, localVarHttpResponse, nil
 }
 
-/* 
+/*
 GameControllerApiService setMark
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param markType markType
@@ -356,9 +350,7 @@ func (a *GameControllerApiService) SetMarkUsingPUT(ctx context.Context, markType
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		if err == nil { 
-			return localVarReturnValue, localVarHttpResponse, err
-		}
+		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
@@ -384,7 +376,7 @@ func (a *GameControllerApiService) SetMarkUsingPUT(ctx context.Context, markType
 	return localVarReturnValue, localVarHttpResponse, nil
 }
 
-/* 
+/*
 GameControllerApiService stepOn
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param request request
@@ -447,9 +439,7 @@ func (a *GameControllerApiService) StepOnUsingPUT(ctx context.Context, request S
 	if localVarHttpResponse.StatusCode < 300 {
 		// If we succeed, return the data, otherwise pass on to decode error.
 		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"));
-		if err == nil { 
-			return localVarReturnValue, localVarHttpResponse, err
-		}
+		return localVarReturnValue, localVarHttpResponse, err
 	}
 
 	if localVarHttpResponse.StatusCode >= 300 {
@@ -474,3 +464,4 @@ func (a *GameControllerApiService) StepOnUsingPUT(ctx context.Context, request S
 
 	return localVarReturnValue, localVarHttpResponse, nil
 }
+
