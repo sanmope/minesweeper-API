@@ -95,7 +95,7 @@ public class GameServiceImpl implements GameService {
 
         gameRepository.save(game.get());
 
-        return modelMapper.map(game.get(), GameResponse.class);
+        return game.map(gameMap -> modelMapper.map(gameMap, GameResponse.class)).get();
 
     }
 
@@ -118,7 +118,8 @@ public class GameServiceImpl implements GameService {
             game.get().setState(State.WON);
         }
 
-        return modelMapper.map(gameRepository.save(game.get()), GameResponse.class);
+        gameRepository.save(game.get());
+        return  game.map(gameMap -> modelMapper.map(gameMap, GameResponse.class)).get();
     }
 
 
@@ -228,7 +229,7 @@ public class GameServiceImpl implements GameService {
 
     private boolean hasWon (Cell[][] matrixGridCells, int mines){
         log.info("[GameService: hasWon]: Validating if user already won the game.");
-        if (countCellRevealed(matrixGridCells) == (matrixGridCells.length*matrixGridCells[0].length - mines)){
+        if (countCellRevealed(matrixGridCells) >= (matrixGridCells.length*matrixGridCells[0].length - mines)){
             return true;
         }else{
             return false;

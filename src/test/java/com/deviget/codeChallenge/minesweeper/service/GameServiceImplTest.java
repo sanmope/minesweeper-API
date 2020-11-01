@@ -3,6 +3,7 @@ package com.deviget.codeChallenge.minesweeper.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +18,7 @@ import com.deviget.codeChallenge.minesweeper.model.GridRequest;
 import com.deviget.codeChallenge.minesweeper.model.MarkRequest;
 import com.deviget.codeChallenge.minesweeper.model.MarkType;
 import com.deviget.codeChallenge.minesweeper.model.State;
+import com.deviget.codeChallenge.minesweeper.model.StepRequest;
 import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,10 +37,6 @@ public class GameServiceImplTest {
         modelMapper = mock(ModelMapper.class);
         gameService.setModelMapper(modelMapper);
 
-        GridRequest request = new GridRequest();
-        request.setColumns(90);      
-        request.setRows(90);
-        request.setName("testName");
     }
 
     @Test
@@ -104,12 +102,12 @@ public class GameServiceImplTest {
             .build();
 
         Game game = Game.builder()
-        .mines(3)
-        .state(State.ACTIVE)
-        .TimeTracker(LocalDateTime.now())
-        .grid(grid)
-        .userName(userName)
-        .build();
+            .mines(3)
+            .state(State.ACTIVE)
+            .TimeTracker(LocalDateTime.now())
+            .grid(grid)
+            .userName(userName)
+            .build();
 
         when(gameRepository.findGameByUserNameAndState(userName, State.ACTIVE)).thenReturn(
             Optional.of(game));
@@ -124,23 +122,23 @@ public class GameServiceImplTest {
         String username = "Test1";
 
         Game game = Game.builder()
-        .mines(3)
-        .state(State.ACTIVE)
-        .TimeTracker(LocalDateTime.now())
-        .grid(new Cell[3][3])
-        .userName(username)
-        .build();
+            .mines(3)
+            .state(State.ACTIVE)
+            .TimeTracker(LocalDateTime.now())
+            .grid(new Cell[3][3])
+            .userName(username)
+            .build();
 
         GameResponse gameResponse = GameResponse.builder()
-        .timeTracker(game.getTimeTracker())
-        .userName(game.getUserName())
-        .grid(game.getGrid())
-        .build();
+            .timeTracker(game.getTimeTracker())
+            .userName(game.getUserName())
+            .grid(game.getGrid())
+            .build();
 
         when(gameRepository.findGameByUserNameAndState(username, State.ACTIVE)).thenReturn(
             Optional.of(game));
         
-            when(modelMapper.map(game,GameResponse.class)).thenReturn(
+        when(modelMapper.map(game,GameResponse.class)).thenReturn(
             GameResponse.builder()
             .timeTracker(game.getTimeTracker())
             .userName(game.getUserName())
@@ -149,6 +147,132 @@ public class GameServiceImplTest {
 
         assertNotNull(gameService.getGame(username));
         assertEquals(gameResponse, gameService.getGame(username));
+
+    }
+
+    @Test
+    public void testStepOnGameFinshedWonAllCellsRevealed(){
+        String userName = "testName";
+
+        StepRequest request = StepRequest.builder()
+            .row(0)
+            .column(0)
+            .build();
+
+        Cell[][] grid = new Cell[2][2];
+
+        //create a grid with all cells revealed
+        for (int i=0; i < 2; i++){
+            for (int j=0; j < 2 ; j++){
+                grid[i][j] = Cell.builder()
+                .revealed(true)
+                .row(0)
+                .col(0)
+                .build();
+            }
+        }
+        grid[0][0].setRevealed(false);
+
+        Game game = Game.builder()
+            .mines(0)
+            .state(State.ACTIVE)
+            .TimeTracker(LocalDateTime.now())
+            .grid(grid)
+            .userName(userName)
+            .build();
+        
+
+        when(gameRepository.findGameByUserNameAndState(userName, State.ACTIVE)).thenReturn(
+            Optional.of(game));
+
+        when(modelMapper.map(game,GameResponse.class)).thenReturn(
+            GameResponse.builder()
+            .timeTracker(game.getTimeTracker())
+            .userName(game.getUserName())
+            .grid(game.getGrid())
+            .state(State.WON)
+            .build());
+        
+        assertEquals(State.WON,gameService.stepOn(userName, request).getState());
+    }
+
+    @Test
+    public void testStepOnGameFinshedWonAllCellsExploded(){
+        String userName = "testName";
+
+        StepRequest request = StepRequest.builder()
+            .row(0)
+            .column(0)
+            .build();
+
+        Cell[][] grid = new Cell[2][2];
+
+        //create a grid with all cells revealed
+        for (int i=0; i < 2; i++){
+            for (int j=0; j < 2 ; j++){
+                grid[i][j] = Cell.builder()
+                .revealed(true)
+                .row(0)
+                .col(0)
+                .build();
+            }
+        }
+        grid[0][0].setRevealed(false);
+
+        Game game = Game.builder()
+            .mines(0)
+            .state(State.ACTIVE)
+            .TimeTracker(LocalDateTime.now())
+            .grid(grid)
+            .userName(userName)
+            .build();
+        
+
+        when(gameRepository.findGameByUserNameAndState(userName, State.ACTIVE)).thenReturn(
+            Optional.of(game));
+
+        when(modelMapper.map(game,GameResponse.class)).thenReturn(
+            GameResponse.builder()
+            .timeTracker(game.getTimeTracker())
+            .userName(game.getUserName())
+            .grid(game.getGrid())
+            .state(State.WON)
+            .build());
+        
+        assertEquals(State.EXPLODED,gameService.stepOn(userName, request).getState());
+    }
+
+    @Test
+    public void testGetTimeTrackerSecondsSpentInGame(){
+        
+        String userName = "Test1";
+        Long diffInSeconds = 50L;
+
+        Game game = Game.builder()
+            .mines(3)
+            .state(State.ACTIVE)
+            .TimeTracker(LocalDateTime.now().minusSeconds(diffInSeconds))
+            .grid(new Cell[3][3])
+            .userName(userName)
+            .build();
+
+        GameResponse gameResponse = GameResponse.builder()
+            .timeTracker(game.getTimeTracker())
+            .userName(game.getUserName())
+            .grid(game.getGrid())
+            .build();
+
+        when(gameRepository.findGameByUserNameAndState(userName, State.ACTIVE)).thenReturn(
+            Optional.of(game));
+        
+        when(modelMapper.map(game,GameResponse.class)).thenReturn(
+            GameResponse.builder()
+            .timeTracker(game.getTimeTracker())
+            .userName(game.getUserName())
+            .grid(game.getGrid())
+            .build());
+
+        assertTrue(diffInSeconds < gameService.getTimeTracker(userName));
 
     }
     
