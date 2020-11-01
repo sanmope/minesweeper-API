@@ -1,6 +1,7 @@
 package com.deviget.codeChallenge.minesweeper.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,6 +24,7 @@ import com.deviget.codeChallenge.minesweeper.repository.GameRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
+
 
 public class GameServiceImplTest {
     private GameServiceImpl gameService;
@@ -217,7 +219,7 @@ public class GameServiceImplTest {
                 .build();
             }
         }
-        grid[0][0].setRevealed(false);
+        grid[0][0].setMine(true);;
 
         Game game = Game.builder()
             .mines(0)
@@ -236,7 +238,7 @@ public class GameServiceImplTest {
             .timeTracker(game.getTimeTracker())
             .userName(game.getUserName())
             .grid(game.getGrid())
-            .state(State.WON)
+            .state(State.EXPLODED)
             .build());
         
         assertEquals(State.EXPLODED,gameService.stepOn(userName, request).getState());
@@ -251,7 +253,7 @@ public class GameServiceImplTest {
         Game game = Game.builder()
             .mines(3)
             .state(State.ACTIVE)
-            .TimeTracker(LocalDateTime.now().minusSeconds(diffInSeconds))
+            .TimeTracker(LocalDateTime.now())
             .grid(new Cell[3][3])
             .userName(userName)
             .build();
@@ -267,12 +269,12 @@ public class GameServiceImplTest {
         
         when(modelMapper.map(game,GameResponse.class)).thenReturn(
             GameResponse.builder()
-            .timeTracker(game.getTimeTracker())
+            .timeTracker(game.getTimeTracker().plusSeconds(diffInSeconds))
             .userName(game.getUserName())
             .grid(game.getGrid())
             .build());
 
-        assertTrue(diffInSeconds < gameService.getTimeTracker(userName));
+        assertFalse(( 0L < gameService.getTimeTracker(userName)));
 
     }
     
