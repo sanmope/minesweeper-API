@@ -7,15 +7,15 @@ you can see the documented endpoints in this link: http://ec2-18-191-138-216.us-
 
 Technology involved [Stack]:
 
-AWS: EC2 Instance for deployment
-Spring boot 
-Postgresql (RDS)
-Maven
-JPA
-Swagger
-JUnit
-Log4j2
-Golang: for the api client library.
+* AWS: EC2 Instance for deployment
+* Spring boot 
+* Postgresql (RDS)
+* Maven
+* JPA
+* Swagger
+* JUnit
+* Log4j2
+* Golang: for the api client library.
 
 For testing the REST-API you can go to the provided link above and use the GUI provided by Swagger to pay with all the endpoints. 
 
